@@ -1,19 +1,19 @@
-current_board = '----------------------' + "\n" +
-                '- \  / - /==\ -      -' + "\n" +
-                '-  \/  -|    |-      -' + "\n" +
-                '-  /\  -|    |-      -' + "\n" +
-                '- /  \ - \==/ -      -' + "\n" +
-                '----------------------' + "\n" +
-                '-      -      -      -' + "\n" +
-                '-      -      -      -' + "\n" +
-                '-      -      -      -' + "\n" +
-                '-      -      -      -' + "\n" +
-                '----------------------' + "\n" +
-                '-      -      -      -' + "\n" +
-                '-      -      -      -' + "\n" +
-                '-      -      -      -' + "\n" +
-                '-      -      -      -' + "\n" +
-                '----------------------'
+#current_board = '----------------------' + "\n" +
+                #'- \  / - /==\ -      -' + "\n" +
+                #'-  \/  -|    |-      -' + "\n" +
+                #'-  /\  -|    |-      -' + "\n" +
+                #'- /  \ - \==/ -      -' + "\n" +
+                #'----------------------' + "\n" +
+                #'-      -      -      -' + "\n" +
+                #'-      -      -      -' + "\n" +
+                #'-      -      -      -' + "\n" +
+                #'-      -      -      -' + "\n" +
+                #'----------------------' + "\n" +
+                #'-      -      -      -' + "\n" +
+                #'-      -      -      -' + "\n" +
+                #'-      -      -      -' + "\n" +
+                #'-      -      -      -' + "\n" +
+                #'----------------------'
                 #for the top left cell having an X, we have, counting the characters in the grid from 0 to 366,
                 #\at 25,49,73,97 and /at 28,50,72 and 94.
 
@@ -46,11 +46,9 @@ EMPTY_BOARD =  '----------------------' + "\n" +
                #and we add 5*23 = 115 to go one row down.
                
             class Board
-                attr_accessor :current_board, :cells_used;
+                attr_accessor :current_board 
                 def initialize()
                    @current_board = EMPTY_BOARD;
-                   @cells_state = Array.new(3) {Array.new(3,'empty')};
-                   @turns_taken = 0;
                 end
 
                 def put_x(row,column)
@@ -100,12 +98,113 @@ EMPTY_BOARD =  '----------------------' + "\n" +
 
             end
 
-            game = Board.new()
-            game.put_o(2,2)
-            game.put_o(1,1)
-            game.put_x(0,1)
-            game.put_x(0,0)
-            game.put_o(2,0)
-            game.put_o(2,1)
-            puts game.current_board;
+            
+            class Cells
+                attr_accessor :state
+                def initialize
+                  @state = Array.new(3) {Array.new(3,'empty')}
+                end
+            end
+
+            
+           
+            class Player
+                attr_reader :name
+                def initialize(name)
+                    @name = name
+                end
+            end
+
+            class EndOfGame
+                attr_accessor :end_game
+                def initialize
+                 @end_game = false
+               end
+               
+               #this method checks if the game is over based on the specific
+               #cell that has just been filled in. That way, not every row/column/diagonal is checked
+               
+               def check_if_game_over(array,row,column)
+                 possible_win = "#{array[row][column]} wins"
+                  #this is the one that wins if it is a decisive result and not a draw
+                  #array will be the current state_of_game when the method is used, a 3 x 3 nested
+                  #array of nil values, 'X' values and 'O' values. The output will be given as false, 'X wins',
+                  #'O wins' or 'draw' and will then have to be interpreted in terms of the player names and
+                  #who was playing with Os and who with Xs.
+                  
+                  if (array[row][0] == array[row][1] && array[row][1] == array[row][2])
+                    self.end_game = true
+                    return possible_win
+                    
+                  end
+                  if (array[0][column] == array[1][column] && array[2][column] == array[1][column])
+                    self.end_game = true
+                    return possible_win
+                  end
+                  if (row == column)
+                    #check the main diagonal
+                    if (array[0][0] == array[1][1] && array[1][1] == array[2][2])
+                        self.end_game = true
+                        return possible_win
+                    end
+                  end 
+                  if (row + column == 2)
+                    #check the non-main diagonal
+                    if (array[0][2] == array[1][1] && array[1][1] == array[2][0])
+                      self.end_game = true
+                      return possible_win
+                    end
+                  end
+                  #only if all of these checks dont return a result, do we then check if every cell is filled
+                  if (array.flatten.compact.include?('empty') == false)
+                    self.end_game = true
+                    return 'draw'
+                  end
+                end
+            end
+
+            state_of_game = Cells.new()
+            game_display = Board.new()
+            win_checker = EndOfGame.new()
+            puts "New Game! \n Player 1 name:"
+            first_player = Player.new(gets.chomp)
+            puts "Player 2 name:"
+            second_player = Player.new(gets.chomp)
+            puts "Does #{second_player.name} choose to play X's or O's?"
+            inputted = gets.strip.upcase
+            valid = false
+            until valid do 
+              if (inputted == 'X' || inputted == 'O')
+                choice = inputted
+                valid = true
+              else puts "#{second_player.name}, please type X or O to continue."
+                inputted = gets.strip.upcase
+              end
+            end
+            two_letter = choice
+            one_letter = (['X','O'] - [choice])[0]
+            #uses array subtraction to make one_letter 'O' if player 2 chose 'X' and vice versa
+            puts "#{first_player.name} goes first with #{one_letter}."
+            current_player = first_player
+            waiting_player = second_player
+            #displays the empty board to start the game
+            # now we loop do (having a turn for one player and toggling the current player for the next turn)
+            #break if after using win_checker.check_if_game_over, win_checker.end_game = true
+
+            #loop do 
+              puts "Choose an empty cell numbered between 1 and 9."
+              puts game_display.current_board
+              inputted = gets.strip.to_i;
+                until (inputted > 0 && state_of_game.state.flatten[inputted - 1] == 'empty') do
+                puts "No, please choose an empty cell by typing it's number."
+                inputted = gets.strip.to_i;
+                end
+            #issue now is how to keep track of which player is which for a turn and who is playing 
+            #X or O, efficiently without duplicating method calls. 
+            #also the board display methods of put_x and put_o must be called correctly
+
+
+             # break if 
+
+
                
