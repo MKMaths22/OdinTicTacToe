@@ -51,44 +51,44 @@ EMPTY_BOARD =  '----------------------' + "\n" +
                    @current_board = EMPTY_BOARD;
                 end
 
-                def put_x(row,column)
-                    #adds an X to the cell at row position (row) and column (column) with rows
-                    #and columns given as 0,1 or 2 respectively
-                    correction = 115*row + 7*column;
+                def put_on_board(row,column,letter)
+                    if (letter == 'X') #adds an X to the cell at row position (row) and column (column) with 
+                      #rows and columns given as 0,1 or 2 respectively
+                      correction = 115*row + 7*column;
+                      #correction is how far we go further along the string to allow for being to the right and
+                      #lower down than if putting the X in the top left corner
+                      places = [72,73,25,49,73,97,28,50,72,94].map{|num| num + correction}
+                      current_board[places[0]] = ' '
+                      current_board[places[1]] = ' '
+                      #ensuring that the name of the cell 1 to 9 is replaced by a space first
+                      for i in (2..5) do 
+                        current_board[places[i]] = "\\"
+                      end
+                      #the positions of the backslashes in the artistic 'X'
+                      for j in (6..9) do 
+                         current_board[places[j]] = "/"
+                      end
+                      #and now the forwardslashes have been drawn in. Voila! 
+                
+                    else #adds an O to the cell at row position (row) and column (column) each numbered from
+                    # 0 to 2
+                    correction = 115*row + 7*column
                     #correction is how far we go further along the string to allow for being to the right and
-                    #lower down than if putting the X in the top left corner
-                    places = [72,73,25,49,73,97,28,50,72,94].map{|num| num + correction}
+                    #lower down than if putting the O in the top left corner
+                    places = [72,73,25,97,28,94,26,27,95,96,47,52,70,75].map{|num| num + correction}
                     current_board[places[0]] = ' '
                     current_board[places[1]] = ' '
-                    #ensuring that the name of the cell 1 to 9 is replaced by a space first
-                    for i in (2..5) do 
-                        current_board[places[i]] = "\\"
-                    end
-                    #the positions of the backslashes in the artistic 'X'
-                    for j in (6..9) do 
-                         current_board[places[j]] = "/"
-                    end
-                    #and now the forwardslashes have been drawn in. Voila! 
-                end
-
-                def put_o(row,column)
-                #adds an O to the cell at row position (row) and column (column) each numbered from 0 to 2
-                  correction = 115*row + 7*column
-                  #correction is how far we go further along the string to allow for being to the right and
-                  #lower down than if putting the O in the top left corner
-                  places = [72,73,25,97,28,94,26,27,95,96,47,52,70,75].map{|num| num + correction}
-                  current_board[places[0]] = ' '
-                  current_board[places[1]] = ' '
-                  current_board[places[2]] = '/'
-                  current_board[places[3]] = '/'
-                  current_board[places[4]] = "\\"
-                  current_board[places[5]] = "\\"
-                    for i in (6..9) do
-                      current_board[places[i]] = "="
-                    end
-                    for i in (10..13) do
-                      current_board[places[i]] = "|"
-                    end
+                    current_board[places[2]] = '/'
+                    current_board[places[3]] = '/'
+                    current_board[places[4]] = "\\"
+                    current_board[places[5]] = "\\"
+                      for i in (6..9) do
+                        current_board[places[i]] = "="
+                      end
+                      for i in (10..13) do
+                        current_board[places[i]] = "|"
+                      end
+                    end 
 
                 #correction is how far we go further along the string to allow for being to the right and
                 #lower down than if putting the O in the top left corner
@@ -110,8 +110,10 @@ EMPTY_BOARD =  '----------------------' + "\n" +
            
             class Player
                 attr_reader :name
+                attr_accessor :letter
                 def initialize(name)
                     @name = name
+                    @letter = nil
                 end
             end
 
@@ -181,10 +183,10 @@ EMPTY_BOARD =  '----------------------' + "\n" +
                 inputted = gets.strip.upcase
               end
             end
-            two_letter = choice
-            one_letter = (['X','O'] - [choice])[0]
+            second_player.letter = choice
+            first_player.letter = (['X','O'] - [choice])[0]
             #uses array subtraction to make one_letter 'O' if player 2 chose 'X' and vice versa
-            puts "#{first_player.name} goes first with #{one_letter}."
+            puts "#{first_player.name} goes first with #{first_player.letter}."
             current_player = first_player
             waiting_player = second_player
             #displays the empty board to start the game
@@ -192,7 +194,7 @@ EMPTY_BOARD =  '----------------------' + "\n" +
             #break if after using win_checker.check_if_game_over, win_checker.end_game = true
 
             #loop do 
-              puts "Choose an empty cell numbered between 1 and 9."
+              puts "#{current_player.name}, choose an empty cell numbered between 1 and 9."
               puts game_display.current_board
               inputted = gets.strip.to_i;
                 until (inputted > 0 && state_of_game.state.flatten[inputted - 1] == 'empty') do
@@ -202,6 +204,7 @@ EMPTY_BOARD =  '----------------------' + "\n" +
             #issue now is how to keep track of which player is which for a turn and who is playing 
             #X or O, efficiently without duplicating method calls. 
             #also the board display methods of put_x and put_o must be called correctly
+               
 
 
              # break if 
