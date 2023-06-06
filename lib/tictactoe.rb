@@ -152,77 +152,79 @@ class EndOfGame
   end
 end
 
-state_of_game = Cells.new
-game_display = Board.new
-win_checker = EndOfGame.new
-puts "New Game! \n Player 1 name:"
-first_player = Player.new(gets.strip)
-puts 'Player 2 name:'
-second_name = gets.strip
-second_name += ' II' if second_name == first_player.name
-# A way of distinguishing players of the same name!
+def play_game
+  state_of_game = Cells.new
+  game_display = Board.new
+  win_checker = EndOfGame.new
+  puts "New Game! \n Player 1 name:"
+  first_player = Player.new(gets.strip)
+  puts 'Player 2 name:'
+  second_name = gets.strip
+  second_name += ' II' if second_name == first_player.name
+  # A way of distinguishing players of the same name!
 
-second_player = Player.new(second_name)
-puts "Does #{second_player.name} choose to play X's or O's?"
-inputted = gets.strip.upcase
+  second_player = Player.new(second_name)
+  puts "Does #{second_player.name} choose to play X's or O's?"
+  inputted = gets.strip.upcase
 
-valid = false
+  valid = false
 
-until valid do
-  if ['X', 'O'].include?(inputted)
-    choice = inputted
-    valid = true
-  else
-    puts "#{second_player.name}, please type X or O to continue."
-    inputted = gets.strip.upcase
-  end
-end
-
-second_player.letter = choice
-first_player.letter = (['X', 'O'] - [choice])[0]
-# uses array subtraction to make one_letter 'O' if player 2 chose 'X' and vice versa
-
-puts "#{first_player.name} goes first with #{first_player.letter}."
-current_player = second_player
-waiting_player = first_player
-result = 'no result'
-# the loop below starts by swapping the current and waiting players so we start wrongly on purpose!
-# the loop lasts for one turn of the game by one player
-
-puts game_display.current_board
-# displays the current board position
-
-while result == 'no result'
-  current_player, waiting_player = waiting_player, current_player
-  puts "#{current_player.name}, choose an empty cell numbered between 1 and 9."
-  inputted = gets.strip.to_i
-
-  until inputted.positive? && state_of_game.state.flatten[inputted - 1] == 'empty' do
-    puts "No, please choose an empty cell by typing it's number."
-    inputted = gets.strip.to_i
+  until valid do
+    if ['X', 'O'].include?(inputted)
+      choice = inputted
+      valid = true
+    else
+      puts "#{second_player.name}, please type X or O to continue."
+      inputted = gets.strip.upcase
+    end
   end
 
-  cell_row = (inputted - 1) / 3
-  cell_column = (inputted - 1) % 3
-  # converts the choice 1 to 9 into the row and column numbers 0 to 2. cell_row uses Ruby integer division
-  # to give the quotient only, which is exactly what is needed!
+  second_player.letter = choice
+  first_player.letter = (['X', 'O'] - [choice])[0]
+  # uses array subtraction to make one_letter 'O' if player 2 chose 'X' and vice versa
 
-  state_of_game.state[cell_row][cell_column] = current_player.letter
-  result = win_checker.check_if_game_over(state_of_game.state, cell_row, cell_column)
-  # updating value of result based on latest change to the game state
+  puts "#{first_player.name} goes first with #{first_player.letter}."
+  current_player = second_player
+  waiting_player = first_player
+  result = 'no result'
+  # the loop below starts by swapping the current and waiting players so we start wrongly on purpose!
+  # the loop lasts for one turn of the game by one player
 
-  game_display.current_board =
-    game_display.put_on_board(game_display.current_board, cell_row, cell_column, current_player.letter)
   puts game_display.current_board
-  # updates the board display string and displays it
-end
+  # displays the current board position
 
-# after the while loop, the following code executes as soon as the game has a result
+  while result == 'no result'
+    current_player, waiting_player = waiting_player, current_player
+    puts "#{current_player.name}, choose an empty cell numbered between 1 and 9."
+    inputted = gets.strip.to_i
 
-if result == 'draw'
-  puts "The game is drawn. Well played, #{current_player.name} and #{waiting_player.name}!"
-else
-  # current_player is the winner
+    until inputted.positive? && state_of_game.state.flatten[inputted - 1] == 'empty' do
+      puts "No, please choose an empty cell by typing it's number."
+      inputted = gets.strip.to_i
+    end
 
-  puts "Congratulations, #{current_player.name}, you've won! Better luck next time, #{waiting_player.name}."
+    cell_row = (inputted - 1) / 3
+    cell_column = (inputted - 1) % 3
+    # converts the choice 1 to 9 into the row and column numbers 0 to 2. cell_row uses Ruby integer division
+    # to give the quotient only, which is exactly what is needed!
+
+    state_of_game.state[cell_row][cell_column] = current_player.letter
+    result = win_checker.check_if_game_over(state_of_game.state, cell_row, cell_column)
+    # updating value of result based on latest change to the game state
+
+    game_display.current_board =
+     game_display.put_on_board(game_display.current_board, cell_row, cell_column, current_player.letter)
+    puts game_display.current_board
+    # updates the board display string and displays it
+  end
+
+  # after the while loop, the following code executes as soon as the game has a result
+
+  if result == 'draw'
+    puts "The game is drawn. Well played, #{current_player.name} and #{waiting_player.name}!"
+  else
+    # current_player is the winner
+
+    puts "Congratulations, #{current_player.name}, you've won! Better luck next time, #{waiting_player.name}."
+  end
 end
