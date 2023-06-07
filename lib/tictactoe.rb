@@ -130,7 +130,7 @@ class EndOfGame
     # the method checks if the game is over based on the specific
     # cell that has just been filled in. That way, not every row/column/diagonal is checked
     # array will be the current state_of_game when the method is used, a 3 x 3 nested
-    # array of nil values, 'X' values and 'O' values. The output will be given as 'no result',
+    # array of 'empty' values, 'X' values and 'O' values. The output will be given as 'no result',
     # 'X wins', 'O wins' or 'draw' and will then have to be interpreted in terms of the
     # player names and who was playing with Os and who with Xs.
 
