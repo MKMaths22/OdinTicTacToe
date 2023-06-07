@@ -6,23 +6,21 @@ describe Board do
   describe "#put_on_board" do
     context "the board is empty" do
       subject(:empty_board) { described_class.new }
+      let(:modified_board) { EMPTY_BOARD }
 
       it "clears characters 72 and 73 from the board string and calls put_x if letter = x" do
-        modified_board = EMPTY_BOARD
         modified_board[72] = ''
         modified_board[73] = ''
         expect(empty_board.put_on_board(EMPTY_BOARD, 0, 0, 'X')).to eq(empty_board.put_x(modified_board, 0))
       end
 
       it "clears characters 72 and 73 from the board string and calls put_y if letter = y" do
-        modified_board = EMPTY_BOARD
         modified_board[72] = ''
         modified_board[73] = ''
         expect(empty_board.put_on_board(EMPTY_BOARD, 0, 0, 'O')).to eq(empty_board.put_o(modified_board, 0))
       end
    
       it "puts x in the bottom left corner" do
-        modified_board = EMPTY_BOARD
         modified_board[72 + 2*115] = ''
         modified_board[73 + 2*115] = ''
         expect(empty_board.put_on_board(EMPTY_BOARD, 0, 2, 'O')).to eq(empty_board.put_o(modified_board, 230))
